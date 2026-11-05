@@ -136,7 +136,7 @@ export default function App() {
               aspectRatio={0.8}
               gap={28}
               autoplay="step"
-              interval={4}
+              interval={3.5}
               cornerRadius={18}
               fadeColor="#0b0a10"
               depthFade={0.6}
