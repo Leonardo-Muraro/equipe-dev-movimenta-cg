@@ -3,8 +3,7 @@ import { motion } from 'motion/react';
 import GradientASCII from './components/GradientASCII';
 import BlurText from './components/BlurText';
 import ShinyText from './components/ShinyText';
-import CircularCarousel from './components/CircularCarousel';
-import ProfileCard from './components/ProfileCard';
+import TeamShowcase from './components/TeamShowcase';
 import { site, team } from './data/team';
 
 const ease = [0.22, 1, 0.36, 1];
@@ -19,8 +18,6 @@ const fadeUp = (delay = 0) => ({
 // Caracteres binários para os fundos ASCII (do mais fraco ao mais forte)
 const BINARY = ' 01';
 const HERO_COLORS = ['#3b1fd1', '#1fa2ff', '#7cff67', '#f4f4f5'];
-
-const slides = team.map(m => ({ src: m.image, alt: `Foto de ${m.nome}`, title: m.nomeCurto }));
 
 export default function App() {
   const [active, setActive] = useState(0);
@@ -93,7 +90,7 @@ export default function App() {
 
       {/* ───────── TIME ───────── */}
       <section className="team-section" style={{ '--member-accent': member.accent }}>
-        {/* Fundo: grade de pontos interativa + brilho na cor do integrante em destaque */}
+        {/* Fundo: gradiente binário + brilho na cor do integrante em destaque */}
         <div className="team-bg" aria-hidden="true">
           <GradientASCII
             shape="rise"
@@ -108,7 +105,7 @@ export default function App() {
           <div className="team-bg-fade" />
         </div>
 
-      <main id="time" className="team">
+      <main id="time" className="team team--showcase">
         <div className="team-head">
           <motion.span {...fadeUp(0)} className="section-label">
             O time
@@ -117,58 +114,17 @@ export default function App() {
             Quem faz acontecer
           </motion.h2>
           <motion.p {...fadeUp(0.16)} className="section-sub">
-            Arraste o carrossel ou use as setas do teclado.
+            Arraste para girar e conhecer o time.
           </motion.p>
         </div>
 
         <motion.div
-          className="team-stage"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.15 }}
           transition={{ duration: 1.1, ease }}
         >
-          <div className="carousel-wrap">
-            <CircularCarousel
-              items={slides}
-              preset="cylinder"
-              cardWidth={200}
-              aspectRatio={0.8}
-              gap={28}
-              autoplay="step"
-              interval={3.5}
-              cornerRadius={18}
-              fadeColor="#0b0a10"
-              depthFade={0.6}
-              captions
-              onChange={setActive}
-            />
-          </div>
-
-          <div className="profile-wrap" aria-live="polite">
-            {/* troca do card: a key nova remonta o card com animação de entrada (sem travar em trocas rápidas) */}
-              <motion.div
-                key={member.nome}
-                initial={{ opacity: 0, y: 18, filter: 'blur(10px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                transition={{ duration: 0.45, ease }}
-              >
-                <ProfileCard
-                  avatarUrl={member.image}
-                  miniAvatarUrl={member.image}
-                  name={member.nome}
-                  title=""
-                  handle={member.handle}
-                  status={member.handle ? null : 'Time Dev'}
-                  statusColor={member.accent}
-                  socials={member.socials}
-                  intro={false}
-                  holo={0.7}
-                  glare={0.45}
-                  radius={20}
-                />
-              </motion.div>
-          </div>
+          <TeamShowcase team={team} detailsUrl={site.detailsUrl} onActiveChange={setActive} />
         </motion.div>
       </main>
       </section>

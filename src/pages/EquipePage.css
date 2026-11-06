@@ -1,0 +1,201 @@
+/* ───────── Página de detalhes (aberta pelo QR Code, pensada para celular) ───────── */
+
+.equipe {
+  min-height: 100svh;
+  background:
+    radial-gradient(90% 40% at 50% 0%, rgba(124, 255, 103, 0.08), transparent 70%),
+    var(--bg);
+}
+
+.equipe__top {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) 14px max(16px, env(safe-area-inset-left));
+  background: rgba(11, 10, 16, 0.72);
+  border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.equipe__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.equipe__back:hover {
+  color: var(--accent);
+}
+
+.equipe__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(32px, 7vw, 72px) max(16px, env(safe-area-inset-right)) clamp(24px, 4vw, 40px) max(16px, env(safe-area-inset-left));
+}
+
+.equipe__title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(36px, 8vw, 72px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.equipe__sub {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: clamp(15px, 2vw, 18px);
+  line-height: 1.5;
+}
+
+.equipe__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: clamp(16px, 2.5vw, 28px);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 max(16px, env(safe-area-inset-right)) 72px max(16px, env(safe-area-inset-left));
+}
+
+/* ── Card de cada pessoa ── */
+.member {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+}
+
+.member__photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  overflow: hidden;
+  background: #111018;
+}
+
+.member__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* faixa na cor da pessoa, saindo da foto para o texto */
+.member__photo::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 38%;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--member-accent) 18%, rgba(11, 10, 16, 0.9)));
+  pointer-events: none;
+}
+
+.member__body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 20px 22px;
+}
+
+.member__name {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(22px, 3vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.member__skills {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.member__label {
+  color: var(--member-accent);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.member__skills ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member__skills li {
+  padding: 6px 12px;
+  border: 1px solid color-mix(in srgb, var(--member-accent) 45%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--member-accent) 10%, transparent);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.member__empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Botões grandes, fáceis de tocar no celular */
+.member__socials {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.member__socials__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.member__socials__item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.member__socials__item:hover,
+.member__socials__item:focus-visible {
+  border-color: color-mix(in srgb, var(--member-accent) 60%, transparent);
+  background: color-mix(in srgb, var(--member-accent) 12%, transparent);
+  outline: none;
+}

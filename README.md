@@ -19,6 +19,13 @@ O deploy é automático pelo workflow `.github/workflows/deploy.yml`: cada push 
 Na primeira vez, em **Settings → Pages**, escolha **Source: GitHub Actions**. O site fica em
 `https://leonardo-muraro.github.io/equipe-dev-movimenta-cg/`.
 
+## Páginas
+
+- `index.html`: apresentação (hero + mostruário do time com QR Code). Feita para telão: a seção do time ocupa exatamente uma tela.
+- `equipe.html`: detalhes de cada pessoa, aberta pelo QR Code. Feita para celular.
+
+O QR Code aponta sozinho para `equipe.html` no mesmo endereço do site. Para fixar outro endereço, preencha `detailsUrl` em `src/data/team.js`.
+
 ## Editar conteúdo
 
 Tudo fica em **`src/data/team.js`**:
@@ -27,6 +34,7 @@ Tudo fica em **`src/data/team.js`**:
 - `headline`: frase principal, com uma linha por item
 - `tagline`: texto de apoio
 - `members`: integrantes
+  - **Proficiências:** preencha `proficiencias` com uma lista curta, ex.: `['PHP', 'React', 'MySQL']`. Aparece ao lado da foto na apresentação e em chips na página de detalhes.
   - **Foto:** coloque o arquivo em `public/fotos/` e preencha `foto: './fotos/arquivo.jpg'`. Use proporção 4:5 (ex.: 800×1000).
   - **Redes sociais:** preencha `linkedin`, `instagram` e `github` com a URL completa. Redes deixadas como `null` não aparecem no card, e o @ do Instagram é exibido no card automaticamente.
   - Para mudar quais redes aparecem, edite `SOCIAL_ORDER`.
@@ -40,8 +48,8 @@ Sem foto, o carrossel e o card mostram um placeholder com as iniciais.
 | `GradientASCII` | fundo do hero e do time | gradiente feito de caracteres binários; no hero nasce do topo e no time nasce de baixo, na cor de quem está em destaque |
 | `BlurText` | título | palavras surgem saindo do desfoque |
 | `ShinyText` | selo acima do título | brilho passando pelo texto |
-| `CircularCarousel` | time | carrossel 3D cilíndrico, arrastável e com autoplay |
-| `ProfileCard` | time | card holográfico com inclinação 3D e redes sociais (customizado) |
+| `InfiniteMenu` | time (apresentação) | esfera de fotos que gira; a pessoa da frente aparece grande, com nome, proficiências e redes |
+| `QRCodeSVG` (qrcode.react) | time (apresentação) | QR Code que abre a página de detalhes |
 
 O `GradientASCII` ganhou o prop `flip` (customização deste projeto), que inverte o gradiente na vertical sem virar os caracteres.
 

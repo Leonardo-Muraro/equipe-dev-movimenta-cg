@@ -287,83 +287,33 @@ button {
   color: var(--muted);
 }
 
-/* Carrossel + card de perfil */
-.team-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-  align-items: center;
-  gap: clamp(24px, 4vw, 56px);
-}
-
-.carousel-wrap {
-  height: 520px;
-  min-width: 0;
-}
-
-/* Legenda do carrossel em cápsula de vidro, legível sobre o fundo binário */
-.carousel-wrap .circular-carousel__caption {
-  left: 50%;
-  right: auto;
-  translate: -50% 0;
-  bottom: 14px;
-  width: max-content;
-  max-width: calc(100% - 32px);
-  gap: 5px;
-  padding: 10px 22px 11px;
-  border-radius: 18px;
-  background: rgba(11, 10, 16, 0.62);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 10px 30px -12px rgba(0, 0, 0, 0.8);
-  -webkit-backdrop-filter: blur(12px) saturate(1.3);
-  backdrop-filter: blur(12px) saturate(1.3);
-}
-
-.carousel-wrap .circular-carousel__title {
-  font-family: var(--display);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ink);
-  letter-spacing: -0.01em;
-}
-
-.carousel-wrap .circular-carousel__count {
-  opacity: 1;
-  color: var(--muted);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-}
-
-/* número da posição atual na cor de quem está em destaque */
-.carousel-wrap .circular-carousel__count > .circular-carousel__digits {
-  color: var(--member-accent);
-  font-weight: 600;
-}
-
-.profile-wrap {
+/* Mostruário: mais largo que o resto da página e cabendo em uma tela (telão) */
+.team--showcase {
+  max-width: 1840px;
+  min-height: 100svh;
   display: flex;
+  flex-direction: column;
+  padding-top: clamp(28px, 3.5vh, 56px);
+  padding-bottom: clamp(20px, 3vh, 48px);
+}
+
+.team--showcase .team-head {
+  margin-bottom: 0;
+}
+
+.team--showcase .section-title {
+  font-size: clamp(36px, 4.2vw, 80px);
+}
+
+.team--showcase .section-sub {
+  margin-top: 8px;
+}
+
+.team--showcase > div:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  min-width: 0;
-  min-height: 560px;
-  align-items: center;
-}
-
-.profile-wrap .profile-card__name {
-  font-family: var(--display);
-  text-wrap: balance;
-}
-
-@media (max-width: 900px) {
-  .team-stage {
-    grid-template-columns: 1fr;
-  }
-  .carousel-wrap {
-    height: 400px;
-  }
-  .profile-wrap {
-    min-height: 0;
-  }
 }
 
 /* ───────── RODAPÉ ───────── */
