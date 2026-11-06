@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import InfiniteMenu from './InfiniteMenu';
 import { SocialLinks } from './SocialIcons';
@@ -19,48 +19,63 @@ const resolveDetailsUrl = configured => {
 
 const prettyUrl = href => href.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
+// Abaixo desta largura o QR vai para baixo do menu e a esfera fica centralizada
+const WIDE = 1000;
+
 export default function TeamShowcase({ team, detailsUrl, onActiveChange }) {
-  const items = useMemo(
-    () => team.map(m => ({ image: m.image, title: m.nomeCurto, description: m.proficiencias.join(' · ') })),
-    [team]
-  );
+  const items = useMemo(() => team.map(m => ({ image: m.image, title: m.nomeCurto })), [team]);
   const qrUrl = useMemo(() => resolveDetailsUrl(detailsUrl), [detailsUrl]);
 
-  // Conteúdo sobreposto ao menu: nome à esquerda da foto, ícones dentro da foto (lado direito)
-  // e proficiências à direita da foto.
+  // Centraliza a esfera no espaço livre à esquerda do painel do QR Code
+  const stageRef = useRef(null);
+  const qrRef = useRef(null);
+  const [offsetX, setOffsetX] = useState(0);
+  useEffect(() => {
+    const stage = stageRef.current;
+    const qr = qrRef.current;
+    if (!stage || !qr) return undefined;
+    const update = () => {
+      const width = stage.clientWidth;
+      if (window.innerWidth < WIDE || !width) return setOffsetX(0);
+      const free = qr.getBoundingClientRect().left - stage.getBoundingClientRect().left;
+      setOffsetX(Math.max(-0.6, Math.min(0, (free / 2 / width) * 2 - 1)));
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(stage);
+    ro.observe(qr);
+    window.addEventListener('resize', update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  // Sobreposto à foto da frente: nome embaixo (dentro da foto) e redes no lado direito
   const renderInfo = (_item, index, moving) => {
     const m = team[index];
     return (
       <div className="showcase-info" data-moving={moving}>
+        <div className="showcase-info__scrim" />
         <h3 className="showcase-info__name">{m.nomeCurto}</h3>
-
-        <SocialLinks socials={m.socials} name={m.nome} className="showcase-info__socials" size={24} />
-
-        <div className="showcase-info__skills">
-          <span className="showcase-info__label">Proficiências</span>
-          {m.proficiencias.length ? (
-            <ul>
-              {m.proficiencias.map(p => (
-                <li key={p}>{p}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="showcase-info__empty">Em breve</p>
-          )}
-        </div>
+        <SocialLinks socials={m.socials} name={m.nome} className="showcase-info__socials" size={26} />
       </div>
     );
   };
 
   return (
-    <div className="showcase">
+    <div className="showcase" ref={stageRef}>
       <div className="showcase__menu">
         <InfiniteMenu
           items={items}
           count={120}
           tileSize={0.66}
-          zoom={1.75}
-          autoplay={3.5}
+          zoom={1.85}
+          offsetX={offsetX}
+          autoplay={3}
+          pauseOnHover={false}
+          travelZoom={1.1}
+          travelDuration={1.7}
           grayscale
           dim={0.55}
           backgroundColor="transparent"
@@ -69,12 +84,12 @@ export default function TeamShowcase({ team, detailsUrl, onActiveChange }) {
         />
       </div>
 
-      <aside className="showcase__qr">
+      <aside className="showcase__qr" ref={qrRef}>
         <p className="showcase__qr-title">Conheça cada um</p>
         <div className="showcase__qr-code">
           <QRCodeSVG
             value={qrUrl}
-            size={512}
+            size={640}
             level="M"
             marginSize={2}
             bgColor="#f4f4f5"

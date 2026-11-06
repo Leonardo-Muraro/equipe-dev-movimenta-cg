@@ -15,9 +15,10 @@ uniform float uTileRadius;
 uniform vec4 uSpin;
 uniform float uStretch;
 uniform float uShift;
+uniform float uOffsetX;
 out vec2 vUv;
 out float vFront;
-out float vItem;
+flat out float vItem;
 
 vec3 rotate(vec4 q, vec3 v) {
   vec3 t = 2.0 * cross(q.xyz, v);
@@ -41,6 +42,7 @@ void main() {
   vec3 world = normalize(center * uRadius + offset) * uRadius * (1.0 + 0.003 * center.z);
   gl_Position = uProjection * vec4(world.xy, world.z - uCamera, 1.0);
   gl_Position.y += uShift * gl_Position.w;
+  gl_Position.x += uOffsetX * gl_Position.w; // desloca o centro da esfera na horizontal
   vUv = aCorner;
   vFront = center.z;
   vItem = aTile.w;
@@ -59,7 +61,7 @@ uniform vec3 uPlaceholder;
 uniform vec3 uTone;
 in vec2 vUv;
 in float vFront;
-in float vItem;
+flat in float vItem;
 out vec4 outColor;
 
 void main() {
@@ -70,7 +72,11 @@ void main() {
   float mask = 1.0 - smoothstep(-aa, aa, d);
   float alpha = mask * smoothstep(0.02, 0.4, vFront) * uReveal;
   if (alpha < 0.002) discard;
-  vec2 cell = vec2(mod(vItem, uCells), floor(vItem / uCells));
+  // índice da célula com inteiros: com float, mod/floor erravam nos itens 3, 6...
+  // (início de cada linha do atlas) e alguns pixels liam a foto vizinha
+  int item = int(vItem + 0.5);
+  int cells = int(uCells + 0.5);
+  vec2 cell = vec2(float(item % cells), float(item / cells));
   vec2 local = vec2(vUv.x, -vUv.y) * 0.5 + 0.5;
   vec4 sampled = texture(uAtlas, (cell + uInset + local * (1.0 - 2.0 * uInset)) / uCells);
   vec3 color = mix(uPlaceholder, sampled.rgb, sampled.a);
@@ -162,6 +168,10 @@ const InfiniteMenu = ({
   stretch = 0.6,
   inertia = 0.6,
   autoplay = 3,
+  pauseOnHover = true,
+  travelZoom = 0,
+  travelDuration = 1.8,
+  offsetX = 0,
   grayscale = true,
   dim = 0.5,
   intro = true,
@@ -190,6 +200,10 @@ const InfiniteMenu = ({
     stretch: clamp(stretch, 0, 3),
     inertia: clamp(inertia, 0, 1),
     autoplay: Math.max(0, autoplay),
+    pauseOnHover,
+    travelZoom: clamp(travelZoom, 0, 2),
+    travelDuration: clamp(travelDuration, 0.6, 5),
+    offsetX: clamp(offsetX, -0.8, 0.8),
     grayscale,
     dim: clamp(dim, 0, 1),
     intro,
@@ -228,6 +242,7 @@ const InfiniteMenu = ({
       'uSpin',
       'uStretch',
       'uShift',
+      'uOffsetX',
       'uAtlas',
       'uCells',
       'uInset',
@@ -302,12 +317,16 @@ const InfiniteMenu = ({
       reveal: 0,
       hovered: false,
       focused: false,
-      idle: 0,
+      idle: 0, // instante (ms) em que o menu parou; 0 = contando ainda não começou
       settle: 0,
       tilePx: 0,
       layout: 'side',
       shift: 0,
-      started: false
+      started: false,
+      // transição do autoplay: afasta a câmera, gira e aproxima na próxima foto
+      travel: 0,
+      travelLen: 0,
+      travelTo: -1
     };
     let raf = 0;
     let timer = 0;
@@ -423,14 +442,22 @@ const InfiniteMenu = ({
     };
 
     const measure = () => {
-      const rest = restDistance();
-      const radius = (tileRadius() / ((rest - RADIUS) * Math.tan(FOV / 2))) * (state.height / 2);
+      // meia largura em px da foto da frente, projetada com a posição REAL da câmera
+      // (mesma conta do vertex shader), para nome/ícones baterem com a foto
+      const t = tileRadius();
+      const hyp = Math.sqrt(RADIUS * RADIUS + t * t);
+      const edgeX = (1.003 * RADIUS * t) / hyp;
+      const edgeZ = (1.003 * RADIUS * RADIUS) / hyp;
+      const camera = state.camera || restDistance();
+      const radius = (edgeX / Math.max(0.05, camera - edgeZ) / Math.tan(FOV / 2)) * (state.height / 2);
       const rounded = Math.round(radius);
       if (rounded !== state.tilePx) {
         state.tilePx = rounded;
         root.style.setProperty('--infinite-menu-tile', `${rounded}px`);
       }
-      const mode = state.width / 2 - radius < 120 ? 'stacked' : 'side';
+      // o layout (lado a lado / empilhado) usa o tamanho em repouso, para não oscilar no zoom out
+      const restRadius = (edgeX / Math.max(0.05, restDistance() - edgeZ) / Math.tan(FOV / 2)) * (state.height / 2);
+      const mode = state.width / 2 - restRadius < 120 ? 'stacked' : 'side';
       if (mode !== state.layout) {
         state.layout = mode;
         setLayout(mode);
@@ -485,7 +512,7 @@ const InfiniteMenu = ({
       const rect = canvas.getBoundingClientRect();
       const aspect = rect.width / rect.height;
       const span = Math.tan(FOV / 2);
-      const x = (((clientX - rect.left) / rect.width) * 2 - 1) * aspect;
+      const x = (((clientX - rect.left) / rect.width) * 2 - 1 - settingsRef.current.offsetX) * aspect;
       const y = 1 - ((clientY - rect.top) / rect.height) * 2 - state.shift;
       const radius = tileRadius();
       let best = -1;
@@ -537,7 +564,20 @@ const InfiniteMenu = ({
       if (state.started) state.reveal = Math.min(1, state.reveal + dt / (reduce ? 0.01 : 0.7));
       const minSide = Math.min(state.width, state.height);
 
+      if (state.travelLen > 0) {
+        state.travel += dt;
+        if (state.travelTo >= 0 && state.travel >= state.travelLen * 0.22) {
+          const to = state.travelTo;
+          state.travelTo = -1;
+          state.target = to;
+          state.speed = 0;
+        }
+        if (state.travel >= state.travelLen) state.travelLen = 0;
+      }
+
       if (drag.active) {
+        state.travelLen = 0;
+        state.travelTo = -1;
         if (drag.dx || drag.dy) {
           const length = Math.hypot(drag.dx, drag.dy);
           const angle = (length / minSide) * 2.6;
@@ -566,7 +606,8 @@ const InfiniteMenu = ({
         const pull = clamp(1 - state.speed / 1.4, 0, 1);
         if (angle > 0.0002 && pull > 0) {
           const axis = cross(current, FRONT);
-          const step = angle * (1 - Math.exp(-dt * (state.target >= 0 ? 6 : 8))) * pull;
+          const rate = state.travelLen > 0 ? 3.4 : state.target >= 0 ? 6 : 8;
+          const step = angle * (1 - Math.exp(-dt * rate)) * pull;
           if (Math.hypot(axis[0], axis[1], axis[2]) > 1e-6) {
             state.orientation = quatNormalize(quatMultiply(quatAxisAngle(normalize(axis), step), state.orientation));
           }
@@ -576,8 +617,23 @@ const InfiniteMenu = ({
         state.front = goal;
       }
 
+      const rest = restDistance();
+      const travelPull =
+        state.travelLen > 0 ? s.travelZoom * Math.sin(Math.PI * clamp(state.travel / state.travelLen, 0, 1)) : 0;
+      const pullAmount = clamp(Math.max(drag.active ? 1 : state.speed / 2.2, travelPull), 0, 2);
+      const target = rest + s.pullBack * pullAmount * RADIUS * 1.25 + (1 - state.reveal) * RADIUS * 1.5;
+      if (!state.camera) state.camera = target + RADIUS;
+      state.camera += (target - state.camera) * (1 - Math.exp(-dt * 4.5));
+
       const settledAngle = Math.acos(clamp(rotate(state.orientation, state.tiles[state.front])[2], -1, 1));
-      const moving = drag.active || state.speed > 0.08 || settledAngle > 0.01;
+      // só considera parado quando a câmera também terminou de aproximar
+      // (senão nome/ícones aparecem dimensionados para a foto final enquanto ela ainda cresce)
+      const moving =
+        drag.active ||
+        state.speed > 0.08 ||
+        settledAngle > 0.01 ||
+        state.travelLen > 0 ||
+        Math.abs(target - state.camera) > 0.03;
       if (moving !== state.moving) {
         state.moving = moving;
         setMoving(moving);
@@ -585,17 +641,20 @@ const InfiniteMenu = ({
       state.settle += ((moving ? 0 : 1) - state.settle) * (1 - Math.exp(-dt * (moving ? 10 : 3)));
       if (!moving) report();
 
-      const rest = restDistance();
-      const pullAmount = clamp(drag.active ? 1 : state.speed / 2.2, 0, 1);
-      const target = rest + s.pullBack * pullAmount * RADIUS * 1.25 + (1 - state.reveal) * RADIUS * 1.5;
-      if (!state.camera) state.camera = target + RADIUS;
-      state.camera += (target - state.camera) * (1 - Math.exp(-dt * 4.5));
-
-      if (s.autoplay > 0 && !moving && !state.hovered && !state.focused && !reduce) {
-        state.idle += dt;
-        if (state.idle >= s.autoplay) {
+      const paused = s.pauseOnHover && (state.hovered || state.focused);
+      if (s.autoplay > 0 && !moving && !paused && !reduce) {
+        // tempo real parado (antes somava dt por quadro e travava quando o loop dormia)
+        if (!state.idle) state.idle = now;
+        if (now - state.idle >= s.autoplay * 1000) {
           state.idle = 0;
-          goTo(neighbor(state.front, [1, 0]));
+          const next = neighbor(state.front, [1, 0]);
+          if (s.travelZoom > 0 && next >= 0) {
+            state.travel = 0;
+            state.travelLen = s.travelDuration;
+            state.travelTo = next;
+          } else {
+            goTo(next);
+          }
         }
       } else {
         state.idle = 0;
@@ -608,6 +667,7 @@ const InfiniteMenu = ({
 
       const busy =
         moving ||
+        state.travelLen > 0 ||
         Math.abs(target - state.camera) > 0.001 ||
         Math.abs((state.layout === 'stacked' ? Math.min(0.3, 72 / state.height) : 0) - state.shift) > 0.0005 ||
         Math.abs((moving ? 0 : 1) - state.settle) > 0.002 ||
@@ -617,9 +677,10 @@ const InfiniteMenu = ({
       if (busy) raf = requestAnimationFrame(frame);
       else {
         last = 0;
-        if (s.autoplay > 0 && !state.hovered && !state.focused && !reduce) {
+        if (s.autoplay > 0 && !(s.pauseOnHover && (state.hovered || state.focused)) && !reduce) {
           clearTimeout(timer);
-          timer = window.setTimeout(wake, Math.max(16, (s.autoplay - state.idle) * 1000));
+          const waited = state.idle ? performance.now() - state.idle : 0;
+          timer = window.setTimeout(wake, Math.max(16, s.autoplay * 1000 - waited));
         }
       }
     };
@@ -664,6 +725,7 @@ const InfiniteMenu = ({
       gl.uniform4f(uniforms.uSpin, state.axis[0], state.axis[1], state.axis[2], reduce ? 0 : state.speed);
       gl.uniform1f(uniforms.uStretch, s.stretch);
       gl.uniform1f(uniforms.uShift, state.shift);
+      gl.uniform1f(uniforms.uOffsetX, s.offsetX);
       gl.uniform1f(uniforms.uCells, atlas.cells);
       gl.uniform1f(uniforms.uInset, 2 / atlas.cell);
       gl.uniform1f(uniforms.uRoundness, s.roundness);
@@ -850,6 +912,7 @@ const InfiniteMenu = ({
       style={{
         backgroundColor,
         '--infinite-menu-text': ink,
+        '--infinite-menu-cx': `${50 + settings.offsetX * 50}%`,
         '--infinite-menu-accent': accent,
         '--infinite-menu-on-accent': onAccent,
         '--infinite-menu-shadow':

@@ -1,133 +1,97 @@
-/* ───────── Mostruário do time: Infinite Menu (esquerda) + QR Code (direita) ─────────
+/* ───────── Mostruário do time: Infinite Menu (palco inteiro) + QR Code flutuando à direita ─────────
    Pensado para telão: tudo grande e legível de longe. */
 
 .showcase {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(260px, 24vw, 460px);
-  align-items: center;
-  gap: clamp(16px, 2.5vw, 48px);
-}
-
-.showcase__menu {
   position: relative;
-  min-width: 0;
   /* altura da tela menos o título da seção */
   height: clamp(520px, calc(100svh - clamp(170px, 19vh, 240px)), 1000px);
 }
 
-/* ── Informações sobrepostas ao menu ── */
+/* O menu ocupa toda a largura: na transição a esfera aparece inteira, sem corte.
+   A foto da frente fica centralizada no espaço livre à esquerda do QR (offsetX). */
+.showcase__menu {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+}
+
+/* ── Informações sobre a foto da frente ── */
 .showcase-info {
   position: absolute;
   inset: 0;
   pointer-events: none;
   --tile: var(--infinite-menu-tile, 200px);
-  --gap: clamp(20px, 2.2cqw, 40px);
+  --cx: var(--infinite-menu-cx, 50%);
 }
 
+.showcase-info__scrim,
 .showcase-info__name,
-.showcase-info__skills,
 .showcase-info__socials {
   transition:
-    opacity 0.5s ease,
-    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Nome: à esquerda da foto */
+/* Escurece a parte de baixo da foto para o nome ficar legível */
+.showcase-info__scrim {
+  position: absolute;
+  left: calc(var(--cx) - var(--tile));
+  top: calc(50% + var(--tile) * 0.2);
+  width: calc(var(--tile) * 2);
+  height: calc(var(--tile) * 0.8);
+  border-radius: 0 0 calc(var(--tile) * 0.2) calc(var(--tile) * 0.2);
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 7, 12, 0.55) 45%, rgba(8, 7, 12, 0.88) 100%);
+}
+
+/* Nome: dentro da foto, embaixo */
 .showcase-info__name {
   position: absolute;
-  top: 50%;
-  right: calc(50% + var(--tile) + var(--gap));
-  max-width: calc(50% - var(--tile) - var(--gap) - 8px);
+  left: calc(var(--cx) - var(--tile) + var(--tile) * 0.1);
+  right: calc(100% - var(--cx) - var(--tile) + var(--tile) * 0.1);
+  bottom: calc(50% - var(--tile) + var(--tile) * 0.09);
   margin: 0;
   font-family: var(--display);
-  font-size: clamp(1.8rem, calc((50cqw - var(--tile)) * 0.2), 4.6rem);
+  font-size: clamp(1.8rem, calc(var(--tile) * 0.15), 5.4rem);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.035em;
-  text-align: right;
   text-wrap: balance;
-  color: var(--ink);
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
-  transform: translateY(-50%);
+  color: #fff;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
 }
 
-/* Proficiências: à direita da foto */
-.showcase-info__skills {
-  position: absolute;
-  top: 50%;
-  left: calc(50% + var(--tile) + var(--gap));
-  max-width: calc(50% - var(--tile) - var(--gap) - 8px);
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  transform: translateY(-50%);
-}
-
-.showcase-info__label {
-  color: var(--member-accent);
-  font-size: clamp(0.8rem, 1cqw, 1rem);
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-.showcase-info__skills ul {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.showcase-info__skills li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-family: var(--display);
-  font-size: clamp(1.1rem, 1.9cqw, 2rem);
-  font-weight: 600;
-  line-height: 1.15;
-  color: var(--ink);
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
-}
-
-.showcase-info__skills li::before {
+/* Barrinha na cor da pessoa acima do nome */
+.showcase-info__name::before {
   content: '';
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  display: block;
+  width: calc(var(--tile) * 0.12);
+  height: 5px;
+  margin-bottom: calc(var(--tile) * 0.04);
+  border-radius: 3px;
   background: var(--member-accent);
-  box-shadow: 0 0 12px var(--member-accent);
+  box-shadow: 0 0 16px var(--member-accent);
 }
 
-.showcase-info__empty {
-  margin: 0;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.5cqw, 1.5rem);
-}
-
-/* Redes sociais: dentro da foto, encostadas no lado direito */
+/* Redes sociais: dentro da foto, no lado direito */
 .showcase-info__socials {
   position: absolute;
   top: 50%;
-  left: calc(50% + var(--tile) - clamp(44px, 4cqw, 60px) - clamp(12px, 1.4cqw, 22px));
+  left: calc(var(--cx) + var(--tile) - clamp(48px, calc(var(--tile) * 0.15), 76px) - var(--tile) * 0.06);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   transform: translateY(-50%);
 }
 
 .showcase-info__socials__item {
   display: grid;
   place-items: center;
-  width: clamp(44px, 4cqw, 60px);
-  height: clamp(44px, 4cqw, 60px);
-  border-radius: 16px;
+  width: clamp(48px, calc(var(--tile) * 0.15), 76px);
+  height: clamp(48px, calc(var(--tile) * 0.15), 76px);
+  border-radius: 18px;
   background: rgba(11, 10, 16, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: var(--ink);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   pointer-events: auto;
@@ -145,15 +109,14 @@
 }
 
 /* Enquanto gira: tudo some suavemente */
-.showcase-info[data-moving='true'] .showcase-info__name {
+.showcase-info[data-moving='true'] .showcase-info__scrim {
   opacity: 0;
-  transform: translate(20px, -50%);
   transition-duration: 0.2s;
 }
 
-.showcase-info[data-moving='true'] .showcase-info__skills {
+.showcase-info[data-moving='true'] .showcase-info__name {
   opacity: 0;
-  transform: translate(-20px, -50%);
+  transform: translateY(16px);
   transition-duration: 0.2s;
 }
 
@@ -168,26 +131,31 @@
   pointer-events: none;
 }
 
-/* ── Painel do QR Code ── */
+/* ── Painel do QR Code (flutua à direita, por cima do palco) ── */
 .showcase__qr {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  min-width: 0;
-  padding: clamp(20px, 2vw, 36px);
+  gap: clamp(14px, 1.6vh, 22px);
+  width: clamp(320px, 29vw, 580px);
+  padding: clamp(22px, 2vw, 40px);
   border: 1px solid var(--line);
-  border-radius: 28px;
-  background: rgba(11, 10, 16, 0.55);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  border-radius: 32px;
+  background: rgba(11, 10, 16, 0.62);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
   text-align: center;
+  transform: translateY(-50%);
 }
 
 .showcase__qr-title {
   margin: 0;
   font-family: var(--display);
-  font-size: clamp(1.4rem, 2.2vw, 2.6rem);
+  font-size: clamp(1.6rem, 2.5vw, 3rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.05;
@@ -196,11 +164,13 @@
 
 .showcase__qr-code {
   width: 100%;
-  max-width: 400px;
-  padding: 10px;
-  border-radius: 22px;
+  max-width: min(100%, 62vh);
+  padding: 12px;
+  border-radius: 24px;
   background: #f4f4f5;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2), 0 24px 60px -24px color-mix(in srgb, var(--member-accent) 70%, transparent);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 24px 60px -24px color-mix(in srgb, var(--member-accent) 70%, transparent);
   transition: box-shadow 0.9s ease;
 }
 
@@ -212,15 +182,16 @@
 
 .showcase__qr-hint {
   margin: 0;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.2vw, 1.3rem);
+  color: var(--ink);
+  font-size: clamp(1.1rem, 1.4vw, 1.6rem);
+  font-weight: 500;
 }
 
 .showcase__qr-link {
   max-width: 100%;
   overflow-wrap: anywhere;
   color: var(--member-accent);
-  font-size: clamp(0.85rem, 0.9vw, 1rem);
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
   font-weight: 500;
   text-decoration: none;
 }
@@ -233,66 +204,28 @@
   display: none;
 }
 
-/* ── Telas menores ── */
-@media (max-width: 1000px) {
+/* ── Telas menores: QR embaixo do menu ── */
+@media (max-width: 999px) {
   .showcase {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: auto;
   }
 
   .showcase__menu {
-    height: clamp(460px, 72svh, 720px);
+    position: relative;
+    height: clamp(420px, 68svh, 720px);
+  }
+
+  .showcase__qr {
+    position: static;
+    width: auto;
+    transform: none;
   }
 
   .showcase__qr-code {
-    max-width: 260px;
-  }
-}
-
-/* Menu estreito (celular): nome e proficiências embaixo da foto */
-@container (max-width: 640px) {
-  .showcase-info__name {
-    top: auto;
-    right: 16px;
-    bottom: 64px;
-    left: 16px;
-    max-width: none;
-    font-size: clamp(1.5rem, 8cqw, 2.2rem);
-    text-align: center;
-    transform: none;
-  }
-
-  .showcase-info__skills {
-    top: auto;
-    right: 16px;
-    bottom: 18px;
-    left: 16px;
-    max-width: none;
-    align-items: center;
-    transform: none;
-  }
-
-  .showcase-info__label {
-    display: none;
-  }
-
-  .showcase-info__skills ul {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px 14px;
-  }
-
-  .showcase-info__skills li {
-    font-size: 1rem;
-  }
-
-  .showcase-info__socials {
-    top: calc(50% - 36px);
-  }
-
-  .showcase-info[data-moving='true'] .showcase-info__name,
-  .showcase-info[data-moving='true'] .showcase-info__skills {
-    transform: translateY(10px);
+    max-width: 300px;
   }
 }
 
@@ -319,8 +252,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .showcase-info__scrim,
   .showcase-info__name,
-  .showcase-info__skills,
   .showcase-info__socials {
     transition: none;
   }
