@@ -72,10 +72,10 @@ export default function TeamShowcase({ team, detailsUrl, onActiveChange }) {
           tileSize={0.66}
           zoom={1.85}
           offsetX={offsetX}
-          autoplay={3}
+          autoplay={3 /* segundos de uma troca à outra (inclui a transição) */}
           pauseOnHover={false}
           travelZoom={1.1}
-          travelDuration={1.7}
+          travelDuration={1.3}
           grayscale
           dim={0.55}
           backgroundColor="transparent"
@@ -85,7 +85,7 @@ export default function TeamShowcase({ team, detailsUrl, onActiveChange }) {
       </div>
 
       <aside className="showcase__qr" ref={qrRef}>
-        <p className="showcase__qr-title">Conheça cada um</p>
+        <p className="showcase__qr-title">Conheça nosso time</p>
         <div className="showcase__qr-code">
           <QRCodeSVG
             value={qrUrl}

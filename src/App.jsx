@@ -111,7 +111,7 @@ export default function App() {
             O time
           </motion.span>
           <motion.h2 {...fadeUp(0.08)} className="section-title">
-            Quem faz acontecer
+            Quem fez acontecer
           </motion.h2>
           <motion.p {...fadeUp(0.16)} className="section-sub">
             Arraste para girar e conhecer o time.

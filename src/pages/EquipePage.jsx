@@ -31,7 +31,7 @@ export default function EquipePage() {
 
       <div className="equipe__intro">
         <span className="section-label">O time</span>
-        <h1 className="equipe__title">Conheça cada um</h1>
+        <h1 className="equipe__title">Conheça nosso time</h1>
         <p className="equipe__sub">
           {team.length} pessoas, suas especialidades e onde encontrar cada uma.
         </p>

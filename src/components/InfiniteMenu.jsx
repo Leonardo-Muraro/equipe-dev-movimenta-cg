@@ -326,7 +326,8 @@ const InfiniteMenu = ({
       // transição do autoplay: afasta a câmera, gira e aproxima na próxima foto
       travel: 0,
       travelLen: 0,
-      travelTo: -1
+      travelTo: -1,
+      lastStep: 0 // início da última troca automática (o intervalo conta de uma troca à outra)
     };
     let raf = 0;
     let timer = 0;
@@ -500,6 +501,24 @@ const InfiniteMenu = ({
       return best;
     };
 
+    // tile da PRÓXIMA pessoa da lista (em ordem), o mais perto da frente
+    const nextTile = () => {
+      const n = itemsRef.current.length;
+      if (n < 2) return neighbor(state.front, [1, 0]);
+      const want = (((state.assign[state.front] ?? 0) % n) + 1) % n;
+      let best = -1;
+      let bestZ = -2;
+      for (let i = 0; i < state.tiles.length; i++) {
+        if (i === state.front || (state.assign[i] ?? 0) % n !== want) continue;
+        const z = rotate(state.orientation, state.tiles[i])[2];
+        if (z > bestZ) {
+          bestZ = z;
+          best = i;
+        }
+      }
+      return best >= 0 ? best : neighbor(state.front, [1, 0]);
+    };
+
     const goTo = index => {
       if (index < 0) return;
       state.target = index;
@@ -576,6 +595,7 @@ const InfiniteMenu = ({
       }
 
       if (drag.active) {
+        state.lastStep = 0;
         state.travelLen = 0;
         state.travelTo = -1;
         if (drag.dx || drag.dy) {
@@ -645,9 +665,11 @@ const InfiniteMenu = ({
       if (s.autoplay > 0 && !moving && !paused && !reduce) {
         // tempo real parado (antes somava dt por quadro e travava quando o loop dormia)
         if (!state.idle) state.idle = now;
-        if (now - state.idle >= s.autoplay * 1000) {
+        const since = state.lastStep ? now - state.lastStep : now - state.idle;
+        if (since >= s.autoplay * 1000 && now - state.idle >= 900) {
           state.idle = 0;
-          const next = neighbor(state.front, [1, 0]);
+          state.lastStep = now;
+          const next = nextTile();
           if (s.travelZoom > 0 && next >= 0) {
             state.travel = 0;
             state.travelLen = s.travelDuration;
@@ -679,8 +701,10 @@ const InfiniteMenu = ({
         last = 0;
         if (s.autoplay > 0 && !(s.pauseOnHover && (state.hovered || state.focused)) && !reduce) {
           clearTimeout(timer);
-          const waited = state.idle ? performance.now() - state.idle : 0;
-          timer = window.setTimeout(wake, Math.max(16, s.autoplay * 1000 - waited));
+          const t = performance.now();
+          const since = state.lastStep ? t - state.lastStep : state.idle ? t - state.idle : 0;
+          const held = state.idle ? t - state.idle : 0;
+          timer = window.setTimeout(wake, Math.max(16, s.autoplay * 1000 - since, 900 - held));
         }
       }
     };
