@@ -129,12 +129,6 @@ export default function App() {
       </main>
       </section>
 
-      <footer className="footer">
-        <span>
-          {site.teamName} · {new Date().getFullYear()}
-        </span>
-        <span className="footer-muted">Feito com café e React</span>
-      </footer>
     </div>
   );
 }

@@ -72,7 +72,7 @@ export default function TeamShowcase({ team, detailsUrl, onActiveChange }) {
           tileSize={0.66}
           zoom={1.85}
           offsetX={offsetX}
-          autoplay={3 /* segundos de uma troca à outra (inclui a transição) */}
+          autoplay={4.5 /* segundos de uma troca à outra (inclui a transição) */}
           pauseOnHover={false}
           travelZoom={1.1}
           travelDuration={1.3}
