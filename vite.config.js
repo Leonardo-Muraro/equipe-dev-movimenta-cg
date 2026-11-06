@@ -13,7 +13,9 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: page('./index.html'),
-        equipe: page('./equipe.html')
+        equipe: page('./equipe.html'),
+        // página de teste: cards de perfil num Option Wheel
+        'equipe-teste': page('./equipe-teste.html')
       }
     }
   }

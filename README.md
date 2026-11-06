@@ -23,6 +23,7 @@ Na primeira vez, em **Settings → Pages**, escolha **Source: GitHub Actions**. 
 
 - `index.html`: apresentação (hero + mostruário do time com QR Code). Feita para telão: a seção do time ocupa exatamente uma tela.
 - `equipe.html`: detalhes de cada pessoa, aberta pelo QR Code. Feita para celular.
+- `equipe-teste.html` (teste): os mesmos detalhes em cards de perfil dentro de um Option Wheel (arrastar para cima/baixo). Não é aberta pelo QR.
 
 O QR Code aponta sozinho para `equipe.html` no mesmo endereço do site. Para fixar outro endereço, preencha `detailsUrl` em `src/data/team.js`.
 
