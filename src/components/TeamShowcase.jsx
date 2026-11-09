@@ -17,8 +17,6 @@ const resolveDetailsUrl = configured => {
   }
 };
 
-const prettyUrl = href => href.replace(/^https?:\/\//, '').replace(/\/$/, '');
-
 // Abaixo desta largura o QR vai para baixo do menu e a esfera fica centralizada
 const WIDE = 1000;
 
@@ -98,10 +96,6 @@ export default function TeamShowcase({ team, detailsUrl, onActiveChange }) {
           />
         </div>
         <p className="showcase__qr-hint">Aponte a câmera do celular</p>
-        <a className="showcase__qr-link" href={qrUrl}>
-          <span className="showcase__qr-url">{prettyUrl(qrUrl)}</span>
-          <span className="showcase__qr-cta">Ver detalhes do time</span>
-        </a>
       </aside>
     </div>
   );

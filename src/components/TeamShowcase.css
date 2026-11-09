@@ -187,22 +187,8 @@
   font-weight: 500;
 }
 
-.showcase__qr-link {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  color: var(--member-accent);
-  font-size: clamp(0.9rem, 1vw, 1.1rem);
-  font-weight: 500;
-  text-decoration: none;
-}
 
-.showcase__qr-link:hover {
-  text-decoration: underline;
-}
 
-.showcase__qr-cta {
-  display: none;
-}
 
 /* ── Telas menores: QR embaixo do menu ── */
 @media (max-width: 999px) {
@@ -229,27 +215,6 @@
   }
 }
 
-/* No celular o QR não faz sentido: vira um botão */
-@media (max-width: 640px) {
-  .showcase__qr-code,
-  .showcase__qr-hint,
-  .showcase__qr-url {
-    display: none;
-  }
-
-  .showcase__qr-cta {
-    display: inline;
-  }
-
-  .showcase__qr-link {
-    padding: 14px 22px;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--bg);
-    font-size: 15px;
-    font-weight: 600;
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .showcase-info__scrim,
