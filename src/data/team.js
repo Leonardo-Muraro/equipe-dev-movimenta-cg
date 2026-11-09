@@ -85,7 +85,7 @@ const members = [
   {
     nome: 'Vilson Maciel Chaparro Filho',
     foto: './fotos/vilson.jpg',
-    proficiencias: [],
+    proficiencias: ['Full Stack', 'PHP'],
     linkedin: 'https://www.linkedin.com/in/vilson-maciel-a86448251/',
     instagram: 'https://www.instagram.com/vilson0508',
     github: 'https://github.com/VilsonMaciel'
