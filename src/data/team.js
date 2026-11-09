@@ -20,13 +20,15 @@ const ACCENTS = ['#7cff67', '#38bdf8', '#a78bfa', '#f472b6', '#fbbf24', '#34d399
 // Para usar uma foto real: coloque o arquivo em /public/fotos/
 // e preencha `foto: './fotos/nome.jpg'` (proporção 4:5). Sem foto, um placeholder é gerado.
 // `nomeCurto` (opcional): como o nome aparece no carrossel. Sem ele, usa primeiro + último nome.
-// `proficiencias`: lista curta exibida ao lado da foto na apresentação e na página de detalhes.
+// `proficiencias`: etiquetas curtas da página de detalhes. Padrão: áreas primeiro
+// (Front-end, Back-end, Full Stack, Banco de Dados...) e depois tecnologias (PHP, MySQL).
+// Banco de dados do time é sempre MySQL: quem tem 'Banco de Dados' também leva 'MySQL'.
 // Redes sociais: cole a URL completa. Deixe null para esconder o ícone daquela rede.
 const members = [
   {
     nome: 'Afonso Landfeldt Panhoti',
     foto: './fotos/afonso.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Front-end'],
     linkedin: null,
     instagram: 'https://www.instagram.com/afonsolandfeldt',
     github: 'https://github.com/motlute19'
@@ -35,7 +37,7 @@ const members = [
     nome: 'Bruna Vilas Boas',
     nomeCurto: 'Bruna Vilas Boas',
     foto: './fotos/bruna.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Full Stack', 'Banco de Dados', 'PHP', 'MySQL'],
     linkedin: 'https://www.linkedin.com/in/bruna-vilas-boas-2a211b382/',
     instagram: 'https://www.instagram.com/bru_vilas',
     github: 'https://github.com/BrunaVilas'
@@ -43,7 +45,7 @@ const members = [
   {
     nome: 'Caio Alonso Ferreira',
     foto: './fotos/caio.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Back-end', 'Banco de Dados', 'PHP', 'MySQL'],
     linkedin: 'https://www.linkedin.com/in/caio-alonso-ferreira-4258a32a0/',
     instagram: null,
     github: 'https://github.com/caioalonsoferreira'
@@ -51,7 +53,7 @@ const members = [
   {
     nome: 'Juliana Gabinio Costa',
     foto: './fotos/juliana.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Full Stack', 'Banco de Dados', 'Web, Desktop e Mobile', 'MySQL'],
     linkedin: 'https://www.linkedin.com/in/juliana-gabinio/',
     instagram: 'https://www.instagram.com/scifiju',
     github: 'https://github.com/jabisaur'
@@ -59,7 +61,7 @@ const members = [
   {
     nome: 'Kauan Alonso Ferreira',
     foto: './fotos/kauan.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Front-end', 'PHP'],
     linkedin: 'https://www.linkedin.com/in/kauan-alonso-ferreira-b618a62a0/',
     instagram: null,
     github: 'https://github.com/KAUANF2025'
@@ -67,7 +69,7 @@ const members = [
   {
     nome: 'Leonardo Almeida Muraro',
     foto: './fotos/leonardo.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Full Stack', 'Banco de Dados', 'Automação', 'PHP', 'MySQL'],
     linkedin: 'https://www.linkedin.com/in/leonardo-muraro-37a626263/',
     instagram: 'https://www.instagram.com/leohigh',
     github: 'https://github.com/Leonardo-Muraro'
@@ -75,7 +77,7 @@ const members = [
   {
     nome: 'Pedro Augusto Jara Gonçalves',
     foto: './fotos/pedro.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: ['Back-end', 'Banco de Dados', 'Modelagem de Dados', 'PHP', 'MySQL'],
     linkedin: 'https://www.linkedin.com/in/pedrojara',
     instagram: null,
     github: 'https://github.com/Poor-Warrior'
@@ -83,7 +85,7 @@ const members = [
   {
     nome: 'Vilson Maciel Chaparro Filho',
     foto: './fotos/vilson.jpg',
-    proficiencias: [], // ex.: ['PHP', 'React', 'MySQL']
+    proficiencias: [],
     linkedin: 'https://www.linkedin.com/in/vilson-maciel-a86448251/',
     instagram: 'https://www.instagram.com/vilson0508',
     github: 'https://github.com/VilsonMaciel'
