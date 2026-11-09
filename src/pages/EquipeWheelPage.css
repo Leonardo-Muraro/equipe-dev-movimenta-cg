@@ -1,16 +1,16 @@
-/* ───────── Página de teste: cards de perfil num Option Wheel ───────── */
+/* ───────── Página de teste: cards de perfil numa roda vertical leve ───────── */
 
 .wheel-page {
   /* largura do card: cabe na largura do celular e na altura de qualquer tela */
-  --card-w: min(82vw, calc((100svh - 190px) * 0.64), 480px);
+  --card-w: min(82vw, calc((100svh - 200px) * 0.66), 460px);
   display: flex;
   flex-direction: column;
   height: 100svh;
   overflow: hidden;
+  /* fundo fixo (sem transição de cor a cada troca: menos trabalho para o celular) */
   background:
-    radial-gradient(70% 45% at 50% 55%, color-mix(in srgb, var(--member-accent) 16%, transparent), transparent 70%),
+    radial-gradient(70% 45% at 50% 55%, rgba(124, 255, 103, 0.06), transparent 70%),
     var(--bg);
-  transition: background 0.8s ease;
 }
 
 .wheel-page__intro {
@@ -53,45 +53,10 @@
   min-height: 0;
 }
 
-/* Cards em vez de texto: centralizados e sem a tipografia do componente */
-.team-wheel .option-wheel__item {
-  left: 50%;
-  width: var(--card-w);
-  margin-left: calc(var(--card-w) / -2);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: normal;
-  white-space: normal;
-  color: var(--ink);
-  transform-origin: 30% 50%;
-}
-
-/* cresce ao chegar no centro (--ow-p vai de 0 a 1) */
-.wheel-card {
-  transform: scale(calc(0.84 + 0.16 * var(--ow-p, 0)));
-  transform-origin: center;
-}
-
-.wheel-profile.profile-card {
-  width: var(--card-w);
-}
-
-/* só o card do centro reage ao toque (tilt e links); os outros só servem para selecionar */
-.team-wheel .option-wheel__item:not(.option-wheel__item--selected) .wheel-card {
-  pointer-events: none;
-}
-
-.wheel-probe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: var(--card-w);
-  visibility: hidden;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .wheel-page {
-    transition: none;
-  }
+/* a barra do topo é sticky e translúcida com blur; aqui ela fica opaca (blur custa caro no celular) */
+.wheel-page .equipe__top {
+  position: relative;
+  background: var(--bg);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }

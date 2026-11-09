@@ -1,0 +1,43 @@
+/* Roda leve: rolagem nativa + scroll-snap; a curva é aplicada por transform no JS */
+.card-wheel {
+  --wheel-pad: 0px;
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  outline: none;
+  padding-block: var(--wheel-pad);
+  -webkit-overflow-scrolling: touch;
+}
+
+.card-wheel::-webkit-scrollbar {
+  display: none;
+}
+
+/* cada linha tem a altura do card; o card de dentro é que desenha */
+.card-wheel__item {
+  display: flex;
+  justify-content: center;
+  scroll-snap-align: center;
+  scroll-snap-stop: always; /* um card por gesto, sem pular vários */
+  transform-origin: 30% 50%;
+  will-change: transform, opacity;
+}
+
+/* só o card do centro aceita toque nos links; os outros só servem para ir até eles */
+.card-wheel__item:not(.is-active) > * {
+  pointer-events: none;
+}
+
+.card-wheel__item:not(.is-active) {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-wheel {
+    scroll-behavior: auto;
+  }
+}

@@ -1,0 +1,123 @@
+.lite-card {
+  width: var(--card-w, 330px);
+  max-width: 100%;
+  padding: 10px;
+  border-radius: 26px;
+  background: linear-gradient(160deg, #1d1b26 0%, #121119 60%, #0f0e15 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 40px -18px rgba(0, 0, 0, 0.9),
+    0 0 0 1px color-mix(in srgb, var(--member-accent) 14%, transparent);
+  color: #f4f4f5;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lite-card__photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #0d0c12;
+}
+
+.lite-card__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  -webkit-user-drag: none;
+}
+
+/* brilho suave fixo no canto (lembra o holográfico, mas é só um gradiente) */
+.lite-card__photo::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(125deg, color-mix(in srgb, var(--member-accent) 16%, transparent) 0%, transparent 38%);
+  pointer-events: none;
+}
+
+.lite-card__info {
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 48px 18px 16px;
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 7, 12, 0.7) 45%, rgba(8, 7, 12, 0.92) 100%);
+}
+
+.lite-card__name {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(20px, calc(var(--card-w, 330px) * 0.068), 28px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.lite-card__skills {
+  margin: 0;
+  color: rgba(244, 244, 245, 0.78);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.lite-card__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 6px 4px 8px;
+}
+
+.lite-card__avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 20%;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--member-accent) 60%, transparent);
+}
+
+.lite-card__handle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.lite-card__socials {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.lite-card__socials__item {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f4f4f5;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.lite-card__socials__item:hover,
+.lite-card__socials__item:focus-visible {
+  background: color-mix(in srgb, var(--member-accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--member-accent) 50%, transparent);
+  outline: none;
+}
